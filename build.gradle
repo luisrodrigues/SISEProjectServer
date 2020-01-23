@@ -1,0 +1,65 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+mainClassName = 'cs.insure.server.Main'
+
+repositories {
+    //mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+
+dependencies {
+//    compile name: 'istack-commons-runtime'
+//    compile name: 'webservices-api'
+//    compile name: 'webservices-rt'
+//    compile name: 'javax.activation'
+//    compile name: 'javax.servlet-api'
+//    compile name: 'javax.annotation-api'
+//    compile name: 'jaxb-osgi'
+//    compile name: 'jaxws-rt'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'cs.insure.server.Main',
+                'Implementation-Title': 'Insure Web Service',
+                'Implementation-Version': version
+        )
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    //with jar
+
+}
+
+
+sourceSets {
+    main {
+        java {
+            // include self written and generated code
+            srcDirs 'src'
+        }
+    }
+    // in future add test configuration here
+}
+
+
+//delete generated source code when clean
+clean {
+    delete "build"
+}
+
+
