@@ -1,4 +1,4 @@
-package com.insure.server;
+package exceptions;
 
 public class ClaimNotFoundException extends Exception {
 

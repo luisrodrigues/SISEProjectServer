@@ -1,4 +1,4 @@
-package com.insure.server;
+package cryptography;
 
 import javax.crypto.NoSuchPaddingException;
 import java.io.UnsupportedEncodingException;

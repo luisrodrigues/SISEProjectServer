@@ -1,5 +1,7 @@
 package com.insure.server;
 
+import exceptions.ClaimNotFoundException;
+
 import javax.jws.WebService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
