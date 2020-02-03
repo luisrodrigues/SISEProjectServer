@@ -13,7 +13,7 @@ public class Claim {
     private String userId;
 
     private AtomicInteger documentID = new AtomicInteger(0);
-    private static ConcurrentHashMap<Integer, Document> documentMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Document> documentMap = new ConcurrentHashMap<>();
 
     public Claim(int uuid, String description, String userId) {
         this.uuid = uuid;
@@ -40,8 +40,9 @@ public class Claim {
     }
 
     public int createDocument(String documentContent, String userId) {
-        documentMap.putIfAbsent(documentID.get(), new Document(documentID.get(), documentContent, userId));
-        return documentID.getAndIncrement();
+        int id = documentID.getAndIncrement();
+        documentMap.putIfAbsent(id, new Document(id, documentContent, userId));
+        return id;
     }
 
     public Document retrieveDocument(int documentUuid) throws DocumentNotFoundException {
