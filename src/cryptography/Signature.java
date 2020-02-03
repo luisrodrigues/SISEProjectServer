@@ -4,27 +4,17 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
 
 public class Signature {
 
-    private AsymEncryptPriv asymEncryptPriv;
     private AsymDecryptPub asymDecryptPub;
     private MessageDigest digest;
 
     public Signature() throws NoSuchPaddingException, NoSuchAlgorithmException {
-        this.asymEncryptPriv = new AsymEncryptPriv();
         this.asymDecryptPub = new AsymDecryptPub();
         this.digest = MessageDigest.getInstance("SHA-256");
-    }
-
-    //Generates signature
-    public String sign(String message, String privateKeyFilename) throws Exception {
-        PrivateKey privateKey = this.asymEncryptPriv.getPrivate(privateKeyFilename);
-        String hash = buildHash(message);
-        return this.asymEncryptPriv.encryptText(hash, privateKey);
     }
 
     //Verifies signature

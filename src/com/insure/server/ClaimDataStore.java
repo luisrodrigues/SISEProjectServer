@@ -1,38 +1,39 @@
 package com.insure.server;
 
+import cryptography.Signature;
 import exceptions.ClaimNotFoundException;
+import exceptions.DocumentNotFoundException;
+import exceptions.InvalidSignatureException;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.jws.WebService;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @WebService
 public class ClaimDataStore {
-    // just for testing
-    public static final int NR_CLAIMS_TO_CREATE = 5;
     // Unique ID
     private AtomicInteger claimID = new AtomicInteger(0);
     // Collection to store the data
     private static ConcurrentHashMap<Integer, Claim> claimStore = new ConcurrentHashMap<>();
+    //Signatures
+    private Signature signature;
 
-    public ClaimDataStore(){
-        // preload data (create a few claims)
-        for (int i = 0; i < NR_CLAIMS_TO_CREATE; i++) {
-            //use create and store
-            createClaim("user" + i, "claiming " + i);
-        }
+    public ClaimDataStore() throws NoSuchAlgorithmException, NoSuchPaddingException {
+        this.signature = new Signature();
     }
-    // specify and implement the methods to
-    // create/retrieve/store/update
-    // claims on the data store safely.
+
+    //   [Claim Methods]
 
     public int createClaim(String description, String userId) {
         //must be the userId of an insured user
-        storeClaim(new Claim(claimID.get(), userId, description));
+        storeClaim(new Claim(claimID.get(), description, userId));
         return claimID.getAndIncrement();
     }
 
-    public static Claim retrieveClaim(int uuid) throws ClaimNotFoundException {
+    public Claim retrieveClaim(int uuid) throws ClaimNotFoundException {
 
         if(!claimStore.containsKey(uuid)) {
             throw new ClaimNotFoundException("Cannot find claim....");
@@ -49,27 +50,58 @@ public class ClaimDataStore {
         retrieveClaim(uuid).setDescription(description);
     }
 
-    // list/create/read/update/delete documents of claims on the data store safely.
+    //   [Document Methods]
 
     public String[] listDocumentsOfClaim(int claimUuid) throws ClaimNotFoundException {
         return retrieveClaim(claimUuid).listDocuments();
     }
 
-    public void createDocumentOfClaim(int claimUuid, String documentContent, String userId) throws ClaimNotFoundException {
-        //userId can be of the original original user who created
-        //the claim or any InSure officer
-        retrieveClaim(claimUuid).createDocument(documentContent, userId);
+
+    public int createDocumentOfClaim(int claimUuid, String documentContent, String userId) throws Exception {
+        //validate signature
+        Claim claim = this.retrieveClaim(claimUuid);
+        int documentId = claim.createDocument(documentContent, userId);
+        Document document = claim.retrieveDocument(documentId);
+
+        return documentId;
     }
 
-    public void readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException {
-        retrieveClaim(claimUuid).readDocument(documentUuid);
+    public void signDocumentOfClaim(int claimUuid, int documentId, String digitalSignature) throws ClaimNotFoundException, DocumentNotFoundException {
+        Document document = this.retrieveClaim(claimUuid).retrieveDocument(documentId);
+        document.sign(digitalSignature);
     }
 
-    public void updateDocumentOfClaim(int claimUuid, int documentUuid, String description) throws ClaimNotFoundException {
-        retrieveClaim(claimUuid).updateDocument(documentUuid, description);
+    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws Exception {
+        return retrieveClaim(claimUuid).readDocument(documentUuid);
     }
 
-    public void deleteDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException {
-        retrieveClaim(claimUuid).deleteDocument(documentUuid);
+    public void updateDocumentOfClaim(int claimUuid, int documentUuid, String description, String userId) throws Exception {
+        Document document = retrieveClaim(claimUuid).retrieveDocument(documentUuid);
+        String documentData = this.readDocumentOfClaim(claimUuid, documentUuid);
+
+        verifySignature(userId, document, documentData);
+        this.retrieveClaim(claimUuid).updateDocument(documentUuid, description);
     }
+
+    //test
+    public void deleteDocumentOfClaim(int claimUuid, int documentUuid, String userId) throws Exception {
+        Document document = retrieveClaim(claimUuid).retrieveDocument(documentUuid);
+        String documentData = this.readDocumentOfClaim(claimUuid, documentUuid);
+
+        verifySignature(userId, document, documentData);
+
+        this.retrieveClaim(claimUuid).deleteDocument(documentUuid);
+    }
+
+    //utility methods
+    private void verifySignature(String userId, Document document, String documentData) throws Exception {
+        if(!this.signature.verify(documentData, document.getDigitalSignature(), "keys/" + userId + "PublicKey")) {
+            throw new InvalidSignatureException("This signature is invalid...");
+        }
+    }
+
+    public String printClaim(int claimUuid ) throws ClaimNotFoundException {
+        return retrieveClaim(claimUuid).toString();
+    }
+
 }
