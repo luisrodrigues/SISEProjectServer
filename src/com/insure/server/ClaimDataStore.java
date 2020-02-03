@@ -8,7 +8,6 @@ import exceptions.InvalidSignatureException;
 import javax.crypto.NoSuchPaddingException;
 import javax.jws.WebService;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,10 +59,7 @@ public class ClaimDataStore {
     public int createDocumentOfClaim(int claimUuid, String documentContent, String userId) throws Exception {
         //validate signature
         Claim claim = this.retrieveClaim(claimUuid);
-        int documentId = claim.createDocument(documentContent, userId);
-        Document document = claim.retrieveDocument(documentId);
-
-        return documentId;
+        return claim.createDocument(documentContent, userId);
     }
 
     public void signDocumentOfClaim(int claimUuid, int documentId, String digitalSignature) throws ClaimNotFoundException, DocumentNotFoundException {
