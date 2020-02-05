@@ -38,7 +38,8 @@ public class Claim {
     public Document retrieveDocument(int documentUuid) throws DocumentNotFoundException {
 
         if(!documentMap.containsKey(documentUuid)) {
-            throw new DocumentNotFoundException("Cannot find document....");
+            throw new DocumentNotFoundException("Document " + documentUuid + " of Claim " + this.uuid
+                    + " does not exist!");
         }
 
         return documentMap.get(documentUuid);

@@ -43,7 +43,7 @@ public class ClaimDataStore {
     public Claim retrieveClaim(int uuid) throws ClaimNotFoundException {
 
         if(!claimStore.containsKey(uuid)) {
-            throw new ClaimNotFoundException("Cannot find claim....");
+            throw new ClaimNotFoundException("Claim " + uuid + " does not exist!");
         }
 
         return claimStore.get(uuid);
@@ -99,7 +99,7 @@ public class ClaimDataStore {
             throws InvalidSignatureException, BadPaddingException, NoSuchAlgorithmException, IOException,
             IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
         if (!this.signature.verify(content, digitalSignature, "keys/" + userId + "PublicKey")) {
-            throw new InvalidSignatureException("This signature is invalid...");
+            throw new InvalidSignatureException("Invalid signature: this document's contents might have been tampered...");
         }
     }
 
