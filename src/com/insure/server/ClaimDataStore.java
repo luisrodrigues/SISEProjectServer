@@ -74,14 +74,14 @@ public class ClaimDataStore {
          return documentList;
     }
 
-    public int createDocumentOfClaim(int claimUuid, String documentContent, String userId,
+    public int createDocumentOfClaim(int claimUuid, int typeNr, String documentContent, String userId,
                                      String digitalSignature) throws BadPaddingException, InvalidSignatureException,
             NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException,
             InvalidKeySpecException, ClaimNotFoundException {
 
         verifyDocumentSignature(documentContent, digitalSignature, userId);
 
-        return this.retrieveClaim(claimUuid).createDocument(documentContent, userId, digitalSignature);
+        return this.retrieveClaim(claimUuid).createDocument(typeNr, documentContent, userId, digitalSignature);
     }
 
     public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,

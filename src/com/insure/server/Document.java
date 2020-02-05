@@ -5,20 +5,36 @@ import java.util.Date;
 
 public class Document {
 
-    private final int uuid;
+    private static final String TYPE_EXPERT = "Expert Report";
+    private static final String TYPE_POLICE = "Police Report";
+    private static final String TYPE_MEDICAL = "Medical Report";
+
+    private int uuid;
+    private String docType;
     private String content;
     private Timestamp timestamp;
     private String userId;
     private String digitalSignature;
 
-    public Document(int uuid, String content, String userId, String digitalSignature) {
+    public Document(int uuid, int typeNr, String content, String userId, String digitalSignature) {
         Date date = new Date();
 
         this.uuid = uuid;
+        this.setType(typeNr);
         this.content = content;
         this.timestamp = new Timestamp(date.getTime());
         this.userId = userId;
         this.digitalSignature = digitalSignature;
+    }
+
+    private void setType(int typeNr) {
+        if (typeNr == 1) {
+            this.docType = TYPE_EXPERT;
+        } else if (typeNr == 2) {
+            this.docType = TYPE_POLICE;
+        } else {
+            this.docType = TYPE_MEDICAL;
+        }
     }
 
     public String getDigitalSignature() {
@@ -34,7 +50,7 @@ public class Document {
     }
 
     public String toString(){
-        return "Document{uuid: " + this.uuid + ", content: " + this.content + ", timestamp: " +
+        return "Document{uuid: " + this.uuid + ", type: " + this.docType + ", content: " + this.content + ", timestamp: " +
                 this.timestamp + ", userId: " + this.userId + ", digitalSignature: " + this.digitalSignature + "}";
     }
 }

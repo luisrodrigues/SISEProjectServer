@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Claim {
 
-    private final int uuid;
+    private int uuid;
     private String description;
     private String userId;
 
@@ -29,9 +29,9 @@ public class Claim {
         return "Claim{uuid: " + this.uuid + ", description: " + this.description + ", userId: " + this.userId + "}";
     }
 
-    public int createDocument(String documentContent, String userId, String digitalSignature) {
+    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature) {
         int id = documentID.getAndIncrement();
-        documentMap.putIfAbsent(id, new Document(id, documentContent, userId, digitalSignature));
+        documentMap.putIfAbsent(id, new Document(id, typeNr, documentContent, userId, digitalSignature));
         return id;
     }
 
