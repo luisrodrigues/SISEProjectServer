@@ -11,28 +11,30 @@ public class Document {
     private String userId;
     private String digitalSignature;
 
-    public Document(int uuid, String content, String userId) {
+    public Document(int uuid, String content, String userId, String digitalSignature) {
         Date date = new Date();
 
         this.uuid = uuid;
         this.content = content;
         this.timestamp = new Timestamp(date.getTime());
         this.userId = userId;
+        this.digitalSignature = digitalSignature;
     }
 
     public String getDigitalSignature() {
         return this.digitalSignature;
     }
 
-    public void sign(String digitalSignature) {
-        this.digitalSignature = digitalSignature;
+    public String getContent() {
+        return this.content;
     }
 
-    public void setContent(String newContent) {
-        this.content = newContent;
+    public String getUserId() {
+        return this.userId;
     }
 
     public String toString(){
-        return "Document{uuid: " + this.uuid + ", content: " + this.content + ", timestamp: " + this.timestamp + ", userId: " + this.userId + "}";
+        return "Document{uuid: " + this.uuid + ", content: " + this.content + ", timestamp: " +
+                this.timestamp + ", userId: " + this.userId + ", digitalSignature: " + this.digitalSignature + "}";
     }
 }

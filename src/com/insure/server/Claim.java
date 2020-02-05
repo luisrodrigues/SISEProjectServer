@@ -2,7 +2,7 @@ package com.insure.server;
 
 import exceptions.DocumentNotFoundException;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,27 +21,17 @@ public class Claim {
         this.userId = userId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public HashMap<Integer, Document> getDocumentMap() {
+        return new HashMap<>(documentMap);
     }
 
     public String toString(){
         return "Claim{uuid: " + this.uuid + ", description: " + this.description + ", userId: " + this.userId + "}";
     }
 
-    public String[] listDocuments() {
-        String[] documentList = new String[documentMap.size()];
-        int i = 0;
-        for (Map.Entry<Integer, Document> entry : documentMap.entrySet()) {
-            documentList[i] = entry.getValue().toString();
-            i++;
-        }
-        return documentList;
-    }
-
-    public int createDocument(String documentContent, String userId) {
+    public int createDocument(String documentContent, String userId, String digitalSignature) {
         int id = documentID.getAndIncrement();
-        documentMap.putIfAbsent(id, new Document(id, documentContent, userId));
+        documentMap.putIfAbsent(id, new Document(id, documentContent, userId, digitalSignature));
         return id;
     }
 
@@ -56,14 +46,6 @@ public class Claim {
 
     public String readDocument(int documentUuid) throws DocumentNotFoundException {
         return this.retrieveDocument(documentUuid).toString();
-    }
-
-    public void updateDocument(int documentUuid, String newContent) throws DocumentNotFoundException {
-        this.retrieveDocument(documentUuid).setContent(newContent);
-    }
-
-    public void deleteDocument(int documentUuid) {
-        documentMap.remove(documentUuid);
     }
 
 }
