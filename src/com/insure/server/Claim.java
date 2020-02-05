@@ -2,7 +2,7 @@ package com.insure.server;
 
 import exceptions.DocumentNotFoundException;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,8 +21,9 @@ public class Claim {
         this.userId = userId;
     }
 
-    public HashMap<Integer, Document> getDocumentMap() {
-        return new HashMap<>(documentMap);
+    public Collection<Document> getDocumentCollection() {
+
+        return this.documentMap.values();
     }
 
     public String toString(){

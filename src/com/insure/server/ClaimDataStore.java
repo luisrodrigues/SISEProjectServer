@@ -14,7 +14,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,9 +61,8 @@ public class ClaimDataStore {
     public String[] listDocumentsOfClaim(int claimUuid) throws ClaimNotFoundException, BadPaddingException,
             InvalidKeySpecException, NoSuchAlgorithmException, IOException, IllegalBlockSizeException,
             InvalidKeyException, InvalidSignatureException {
-         HashMap<Integer, Document> documentMap = retrieveClaim(claimUuid).getDocumentMap();
-         Collection<Document> documentCollection = documentMap.values();
-         String[] documentList = new String[documentMap.size()];
+         Collection<Document> documentCollection = retrieveClaim(claimUuid).getDocumentCollection();
+         String[] documentList = new String[documentCollection.size()];
          int i = 0;
          for (Document doc : documentCollection) {
              verifyDocumentSignature(doc.getContent(), doc.getDigitalSignature(), doc.getUserId());
