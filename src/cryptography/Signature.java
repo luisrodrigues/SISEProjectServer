@@ -4,7 +4,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,8 +30,8 @@ public class Signature {
         return messageHash.equals(digestHash);
     }
 
-    private String buildHash(String message) throws UnsupportedEncodingException {
-        return Base64.getEncoder().encodeToString(this.digest.digest(message.getBytes("UTF-8")));
+    private String buildHash(String message) {
+        return Base64.getEncoder().encodeToString(this.digest.digest(message.getBytes(StandardCharsets.UTF_8)));
     }
 
 }

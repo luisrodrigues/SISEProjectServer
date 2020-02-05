@@ -6,7 +6,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -29,10 +29,9 @@ public class AsymDecryptPub {
     }
 
     public String decryptText(String msg, Key key)
-            throws InvalidKeyException, UnsupportedEncodingException,
-            IllegalBlockSizeException, BadPaddingException {
+            throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         this.cipher.init(Cipher.DECRYPT_MODE, key);
-        return new String(cipher.doFinal(Base64.getDecoder().decode(msg)), "UTF-8");
+        return new String(cipher.doFinal(Base64.getDecoder().decode(msg)), StandardCharsets.UTF_8);
     }
 
 }
