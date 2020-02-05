@@ -2,11 +2,17 @@ package com.insure.server;
 
 import cryptography.Signature;
 import exceptions.ClaimNotFoundException;
+import exceptions.DocumentNotFoundException;
 import exceptions.InvalidSignatureException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.jws.WebService;
+import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +59,7 @@ public class ClaimDataStore {
 
     //   [Document Methods]
 
-    public String[] listDocumentsOfClaim(int claimUuid) throws Exception {
+    public String[] listDocumentsOfClaim(int claimUuid) throws ClaimNotFoundException, BadPaddingException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException, InvalidSignatureException {
          HashMap<Integer, Document> documentMap = retrieveClaim(claimUuid).getDocumentMap();
          Collection<Document> documentCollection = documentMap.values();
          String[] documentList = new String[documentMap.size()];
@@ -69,14 +75,14 @@ public class ClaimDataStore {
     }
 
     public int createDocumentOfClaim(int claimUuid, String documentContent, String userId,
-                                     String digitalSignature) throws Exception {
+                                     String digitalSignature) throws BadPaddingException, InvalidSignatureException, NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException, ClaimNotFoundException {
 
         verifyDocumentSignature(documentContent, digitalSignature, userId);
 
         return this.retrieveClaim(claimUuid).createDocument(documentContent, userId, digitalSignature);
     }
 
-    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws Exception {
+    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, BadPaddingException, InvalidSignatureException, NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException, DocumentNotFoundException {
 
         Document document = retrieveClaim(claimUuid).retrieveDocument(documentUuid);
 
@@ -85,7 +91,7 @@ public class ClaimDataStore {
         return retrieveClaim(claimUuid).readDocument(documentUuid);
     }
 
-    private void verifyDocumentSignature(String content, String digitalSignature, String userId) throws Exception {
+    private void verifyDocumentSignature(String content, String digitalSignature, String userId) throws InvalidSignatureException, BadPaddingException, NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
         if (!this.signature.verify(content, digitalSignature, "keys/" + userId + "PublicKey")) {
             throw new InvalidSignatureException("This signature is invalid...");
         }

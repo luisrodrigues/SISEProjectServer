@@ -5,9 +5,11 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
@@ -19,7 +21,7 @@ public class AsymDecryptPub {
         this.cipher = Cipher.getInstance("RSA");
     }
 
-    public PublicKey getPublic(String filename) throws Exception {
+    public PublicKey getPublic(String filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
         X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");

@@ -1,10 +1,15 @@
 package cryptography;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 public class Signature {
@@ -18,7 +23,7 @@ public class Signature {
     }
 
     //Verifies signature
-    public boolean verify(String message, String digest, String publicKeyFilename) throws Exception {
+    public boolean verify(String message, String digest, String publicKeyFilename) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
         PublicKey publicKey = this.asymDecryptPub.getPublic(publicKeyFilename);
         String messageHash = buildHash(message);
         String digestHash = this.asymDecryptPub.decryptText(digest, publicKey);
