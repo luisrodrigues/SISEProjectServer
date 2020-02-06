@@ -49,10 +49,13 @@ public class Claim {
 
     // Document-related methods
 
-    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature)
-            throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
+    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature) {
         int id = documentID.getAndIncrement();
-        documentMap.putIfAbsent(id, new Document(id, typeNr, documentContent, userId, digitalSignature));
+        try {
+            documentMap.putIfAbsent(id, new Document(id, typeNr, documentContent, userId, digitalSignature));
+        } catch (InvalidUserException | InvalidDocumentTypeException | InvalidDocumentContentException e) {
+            e.printStackTrace();
+        }
         return id;
     }
 

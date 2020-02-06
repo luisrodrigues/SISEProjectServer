@@ -30,11 +30,14 @@ public class ClaimDataStore {
 
     //   [Claim Methods]
 
-    public int createClaim(String description, String userId) throws InvalidClaimDescriptionException,
-            InvalidUserException {
+    public int createClaim(String description, String userId) {
         //must be the userId of an insured user
         int id = claimID.getAndIncrement();
-        storeClaim(id, new Claim(id, description, userId));
+        try {
+            storeClaim(id, new Claim(id, description, userId));
+        } catch (InvalidClaimDescriptionException | InvalidUserException e) {
+            e.printStackTrace();
+        }
         return id;
     }
 
