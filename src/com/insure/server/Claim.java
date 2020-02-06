@@ -20,6 +20,9 @@ public class Claim {
 
     public Claim(int uuid, String description, String userId) {
         this.uuid = uuid;
+
+
+
         this.description = description;
         this.userId = userId;
     }

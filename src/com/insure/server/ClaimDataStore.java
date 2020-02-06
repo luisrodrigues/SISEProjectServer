@@ -87,6 +87,11 @@ public class ClaimDataStore {
     public String readDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getContent();
     }
+
+    //used in tampering simulation situation
+    public String readAndTamperDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+        return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getContent() + "this has been tampered";
+    }
     //read the document's user
     public String readDocumentUserOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getUserId();
