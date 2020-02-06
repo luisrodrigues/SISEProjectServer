@@ -4,6 +4,7 @@ import cryptography.Signature;
 import exceptions.ClaimNotFoundException;
 import exceptions.DocumentNotFoundException;
 import exceptions.InvalidSignatureException;
+import exceptions.NotSameUserException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,6 +48,10 @@ public class ClaimDataStore {
         return claimStore.get(uuid);
     }
 
+    public void updateClaim(int uuid, String description) throws ClaimNotFoundException {
+        retrieveClaim(uuid).setDescription(description);
+    }
+
     public String printClaim(int claimUuid ) throws ClaimNotFoundException {
         return retrieveClaim(claimUuid).toString();
     }
@@ -58,18 +62,8 @@ public class ClaimDataStore {
 
     //   [Document Methods]
 
-    public String[] listDocumentsOfClaim(int claimUuid) throws ClaimNotFoundException, BadPaddingException,
-            InvalidKeySpecException, NoSuchAlgorithmException, IOException, IllegalBlockSizeException,
-            InvalidKeyException, InvalidSignatureException {
-         Collection<Document> documentCollection = retrieveClaim(claimUuid).getDocumentCollection();
-         String[] documentList = new String[documentCollection.size()];
-         int i = 0;
-         for (Document doc : documentCollection) {
-             verifyDocumentSignature(doc.getContent(), doc.getDigitalSignature(), doc.getUserId());
-             documentList[i] = doc.toString();
-             i++;
-         }
-         return documentList;
+    public Integer[] getDocumentKeysOfClaim(int claimUuid) throws ClaimNotFoundException {
+         return retrieveClaim(claimUuid).getDocumentKeys();
     }
 
     public int createDocumentOfClaim(int claimUuid, int typeNr, String documentContent, String userId,
@@ -82,22 +76,37 @@ public class ClaimDataStore {
         return this.retrieveClaim(claimUuid).createDocument(typeNr, documentContent, userId, digitalSignature);
     }
 
-    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,
-            BadPaddingException, InvalidSignatureException, NoSuchAlgorithmException, IOException,
-            IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException, DocumentNotFoundException {
-
-        Document document = retrieveClaim(claimUuid).retrieveDocument(documentUuid);
-
-        verifyDocumentSignature(document.getContent(), document.getDigitalSignature(), document.getUserId());
-
+    // read all to string
+    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).readDocument(documentUuid);
+    }
+
+    //read content
+    public String readDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+        return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getContent();
+    }
+    //read user
+    public String readDocumentUserOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+        return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getUserId();
+    }
+    //read signature
+    public String readDocumentSignatureOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+        return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getDigitalSignature();
+    }
+
+    public void updateDocumentOfClaim(int claimUuid, int documentUuid, String description, String digitalSignature, String userId) throws ClaimNotFoundException, DocumentNotFoundException, NotSameUserException {
+        retrieveClaim(claimUuid).updateDocument(documentUuid, description, digitalSignature, userId);
+    }
+
+    public void deleteDocumentOfClaim(int claimUuid, int documentUuid, String userId) throws ClaimNotFoundException, DocumentNotFoundException, NotSameUserException {
+        retrieveClaim(claimUuid).deleteDocument(documentUuid, userId);
     }
 
     private void verifyDocumentSignature(String content, String digitalSignature, String userId)
             throws InvalidSignatureException, BadPaddingException, NoSuchAlgorithmException, IOException,
             IllegalBlockSizeException, InvalidKeyException, InvalidKeySpecException {
         if (!this.signature.verify(content, digitalSignature, "keys/" + userId + "PublicKey")) {
-            throw new InvalidSignatureException("Invalid signature: this document's contents might have been tampered...");
+            throw new InvalidSignatureException("Invalid signature: cannot add document");
         }
     }
 

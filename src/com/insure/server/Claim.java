@@ -1,8 +1,9 @@
 package com.insure.server;
 
 import exceptions.DocumentNotFoundException;
+import exceptions.NotSameUserException;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,9 +22,13 @@ public class Claim {
         this.userId = userId;
     }
 
-    public Collection<Document> getDocumentCollection() {
+    public Integer[] getDocumentKeys() {
+        Set<Integer> set = this.documentMap.keySet();
+        return this.documentMap.keySet().toArray(new Integer[set.size()]);
+    }
 
-        return this.documentMap.values();
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String toString(){
@@ -48,6 +53,25 @@ public class Claim {
 
     public String readDocument(int documentUuid) throws DocumentNotFoundException {
         return this.retrieveDocument(documentUuid).toString();
+    }
+
+    public void updateDocument(int documentUuid, String newContent, String digitalSignature, String userId) throws DocumentNotFoundException, NotSameUserException {
+        Document document = this.retrieveDocument(documentUuid);
+        if (document.getUserId().equals(userId)) {
+            document.setContent(newContent);
+            document.setDigitalSignature(digitalSignature);
+        } else {
+            throw new NotSameUserException("You are not the author of this document!");
+        }
+    }
+
+    public void deleteDocument(int documentUuid, String userId) throws DocumentNotFoundException, NotSameUserException {
+        Document document = this.retrieveDocument(documentUuid);
+        if (document.getUserId().equals(userId)) {
+            documentMap.remove(documentUuid);
+        } else {
+            throw new NotSameUserException("You are not the author of this document!");
+        }
     }
 
 }

@@ -37,6 +37,14 @@ public class Document {
         }
     }
 
+    public void setDigitalSignature(String digitalSignature) {
+         this.digitalSignature = digitalSignature;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public String getDigitalSignature() {
         return this.digitalSignature;
     }
