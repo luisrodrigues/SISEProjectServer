@@ -13,7 +13,9 @@ public class Claim {
     private String description;
     private String userId;
 
+    // Used concurrency reasons, to create incremental document id
     private AtomicInteger documentID = new AtomicInteger(0);
+    // DataStore to store the documents thread-safely on each claim
     private ConcurrentHashMap<Integer, Document> documentMap = new ConcurrentHashMap<>();
 
     public Claim(int uuid, String description, String userId) {
@@ -35,6 +37,8 @@ public class Claim {
         return "Claim{uuid: " + this.uuid + ", description: " + this.description + ", userId: " + this.userId + "}";
     }
 
+    // Document-related methods
+
     public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature) {
         int id = documentID.getAndIncrement();
         documentMap.putIfAbsent(id, new Document(id, typeNr, documentContent, userId, digitalSignature));
@@ -55,6 +59,7 @@ public class Claim {
         return this.retrieveDocument(documentUuid).toString();
     }
 
+    //only accepts content updates from the author
     public void updateDocument(int documentUuid, String newContent, String digitalSignature, String userId) throws DocumentNotFoundException, NotSameUserException {
         Document document = this.retrieveDocument(documentUuid);
         if (document.getUserId().equals(userId)) {
@@ -65,6 +70,7 @@ public class Claim {
         }
     }
 
+    //only the author can delete the content
     public void deleteDocument(int documentUuid, String userId) throws DocumentNotFoundException, NotSameUserException {
         Document document = this.retrieveDocument(documentUuid);
         if (document.getUserId().equals(userId)) {

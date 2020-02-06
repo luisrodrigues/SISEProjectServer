@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Document {
 
+    //possible document types
     private static final String TYPE_EXPERT = "Expert Report";
     private static final String TYPE_POLICE = "Police Report";
     private static final String TYPE_MEDICAL = "Medical Report";

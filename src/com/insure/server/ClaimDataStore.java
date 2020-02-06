@@ -19,11 +19,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @WebService
 public class ClaimDataStore {
-    // Unique ID
+
+    // Used concurrency reasons, to create incremental claim d
     private AtomicInteger claimID = new AtomicInteger(0);
-    // Collection to store the data
+    // DataStore to store the claims thread-safely
     private ConcurrentHashMap<Integer, Claim> claimStore = new ConcurrentHashMap<>();
-    //Signatures
+    //Used to verify signatures
     private Signature signature;
 
     public ClaimDataStore() throws NoSuchAlgorithmException, NoSuchPaddingException {
@@ -76,20 +77,20 @@ public class ClaimDataStore {
         return this.retrieveClaim(claimUuid).createDocument(typeNr, documentContent, userId, digitalSignature);
     }
 
-    // read all to string
+    // read document into a string
     public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).readDocument(documentUuid);
     }
 
-    //read content
+    //read the document's content
     public String readDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getContent();
     }
-    //read user
+    //read the document's user
     public String readDocumentUserOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getUserId();
     }
-    //read signature
+    //read the document's signature
     public String readDocumentSignatureOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getDigitalSignature();
     }
