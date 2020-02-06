@@ -1,7 +1,6 @@
 package com.insure.server;
 
-import exceptions.DocumentNotFoundException;
-import exceptions.NotSameUserException;
+import exceptions.*;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,12 +17,19 @@ public class Claim {
     // DataStore to store the documents thread-safely on each claim
     private ConcurrentHashMap<Integer, Document> documentMap = new ConcurrentHashMap<>();
 
-    public Claim(int uuid, String description, String userId) {
+    public Claim(int uuid, String description, String userId) throws InvalidClaimDescriptionException, InvalidUserException {
         this.uuid = uuid;
 
-
+        if(description == null || description.equals("")) {
+            throw new InvalidClaimDescriptionException("Invalid description!");
+        }
 
         this.description = description;
+
+        if(userId == null || userId.equals("")) {
+            throw new InvalidUserException("Invalid userId!");
+        }
+
         this.userId = userId;
     }
 
@@ -42,7 +48,7 @@ public class Claim {
 
     // Document-related methods
 
-    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature) {
+    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature) throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
         int id = documentID.getAndIncrement();
         documentMap.putIfAbsent(id, new Document(id, typeNr, documentContent, userId, digitalSignature));
         return id;

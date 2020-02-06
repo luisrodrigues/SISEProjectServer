@@ -1,10 +1,7 @@
 package com.insure.server;
 
 import cryptography.Signature;
-import exceptions.ClaimNotFoundException;
-import exceptions.DocumentNotFoundException;
-import exceptions.InvalidSignatureException;
-import exceptions.NotSameUserException;
+import exceptions.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -33,7 +30,7 @@ public class ClaimDataStore {
 
     //   [Claim Methods]
 
-    public int createClaim(String description, String userId) {
+    public int createClaim(String description, String userId) throws InvalidClaimDescriptionException, InvalidUserException {
         //must be the userId of an insured user
         int id = claimID.getAndIncrement();
         storeClaim(id, new Claim(id, description, userId));
@@ -71,7 +68,7 @@ public class ClaimDataStore {
     public int createDocumentOfClaim(int claimUuid, int typeNr, String documentContent, String userId,
                                      String digitalSignature) throws BadPaddingException, InvalidSignatureException,
             NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException,
-            InvalidKeySpecException, ClaimNotFoundException {
+            InvalidKeySpecException, ClaimNotFoundException, InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
 
         verifyDocumentSignature(documentContent, digitalSignature, userId);
 

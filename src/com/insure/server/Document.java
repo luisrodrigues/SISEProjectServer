@@ -1,5 +1,9 @@
 package com.insure.server;
 
+import exceptions.InvalidDocumentContentException;
+import exceptions.InvalidDocumentTypeException;
+import exceptions.InvalidUserException;
+
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -17,13 +21,28 @@ public class Document {
     private String userId;
     private String digitalSignature;
 
-    public Document(int uuid, int typeNr, String content, String userId, String digitalSignature) {
+    public Document(int uuid, int typeNr, String content, String userId, String digitalSignature) throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
         Date date = new Date();
 
         this.uuid = uuid;
+
+        if(typeNr < 1 || typeNr > 3) {
+            throw new InvalidDocumentTypeException("Invalid document type!");
+        }
+
         this.setType(typeNr);
+
+        if(content == null || content.equals("")) {
+            throw new InvalidDocumentContentException("Invalid document content!");
+        }
+
         this.content = content;
         this.timestamp = new Timestamp(date.getTime());
+
+        if(userId == null || userId.equals("")) {
+            throw new InvalidUserException("Invalid userId!");
+        }
+
         this.userId = userId;
         this.digitalSignature = digitalSignature;
     }
