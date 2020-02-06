@@ -63,6 +63,7 @@ public class ClaimDataStore {
 
     //   [Document Methods]
 
+    //return the list of existing document keys inside a claim
     public Integer[] getDocumentKeysOfClaim(int claimUuid) throws ClaimNotFoundException {
          return retrieveClaim(claimUuid).getDocumentKeys();
     }
