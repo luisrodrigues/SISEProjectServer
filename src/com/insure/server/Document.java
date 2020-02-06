@@ -21,7 +21,8 @@ public class Document {
     private String userId;
     private String digitalSignature;
 
-    public Document(int uuid, int typeNr, String content, String userId, String digitalSignature) throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
+    public Document(int uuid, int typeNr, String content, String userId, String digitalSignature)
+            throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
         Date date = new Date();
 
         this.uuid = uuid;

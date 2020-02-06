@@ -17,7 +17,8 @@ public class Claim {
     // DataStore to store the documents thread-safely on each claim
     private ConcurrentHashMap<Integer, Document> documentMap = new ConcurrentHashMap<>();
 
-    public Claim(int uuid, String description, String userId) throws InvalidClaimDescriptionException, InvalidUserException {
+    public Claim(int uuid, String description, String userId) throws InvalidClaimDescriptionException,
+            InvalidUserException {
         this.uuid = uuid;
 
         if(description == null || description.equals("")) {
@@ -48,7 +49,8 @@ public class Claim {
 
     // Document-related methods
 
-    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature) throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
+    public int createDocument(int typeNr, String documentContent, String userId, String digitalSignature)
+            throws InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
         int id = documentID.getAndIncrement();
         documentMap.putIfAbsent(id, new Document(id, typeNr, documentContent, userId, digitalSignature));
         return id;
@@ -69,7 +71,8 @@ public class Claim {
     }
 
     //only accepts content updates from the author
-    public void updateDocument(int documentUuid, String newContent, String digitalSignature, String userId) throws DocumentNotFoundException, NotSameUserException {
+    public void updateDocument(int documentUuid, String newContent, String digitalSignature, String userId)
+            throws DocumentNotFoundException, NotSameUserException {
         Document document = this.retrieveDocument(documentUuid);
         if (document.getUserId().equals(userId)) {
             document.setContent(newContent);

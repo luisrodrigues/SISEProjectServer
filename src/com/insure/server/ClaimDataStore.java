@@ -30,7 +30,8 @@ public class ClaimDataStore {
 
     //   [Claim Methods]
 
-    public int createClaim(String description, String userId) throws InvalidClaimDescriptionException, InvalidUserException {
+    public int createClaim(String description, String userId) throws InvalidClaimDescriptionException,
+            InvalidUserException {
         //must be the userId of an insured user
         int id = claimID.getAndIncrement();
         storeClaim(id, new Claim(id, description, userId));
@@ -68,7 +69,8 @@ public class ClaimDataStore {
     public int createDocumentOfClaim(int claimUuid, int typeNr, String documentContent, String userId,
                                      String digitalSignature) throws BadPaddingException, InvalidSignatureException,
             NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException,
-            InvalidKeySpecException, ClaimNotFoundException, InvalidUserException, InvalidDocumentTypeException, InvalidDocumentContentException {
+            InvalidKeySpecException, ClaimNotFoundException, InvalidUserException, InvalidDocumentTypeException,
+            InvalidDocumentContentException {
 
         verifyDocumentSignature(documentContent, digitalSignature, userId);
 
@@ -76,33 +78,40 @@ public class ClaimDataStore {
     }
 
     // read document into a string
-    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+    public String readDocumentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,
+            DocumentNotFoundException {
         return retrieveClaim(claimUuid).readDocument(documentUuid);
     }
 
     //read the document's content
-    public String readDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+    public String readDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,
+            DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getContent();
     }
 
     //used in tampering simulation situation
-    public String readAndTamperDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
-        return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getContent() + "this has been tampered";
+    public void tamperDocumentContentOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,
+            DocumentNotFoundException {
+        retrieveClaim(claimUuid).retrieveDocument(documentUuid).setContent("this has been tampered");
     }
     //read the document's user
-    public String readDocumentUserOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+    public String readDocumentUserOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,
+            DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getUserId();
     }
     //read the document's signature
-    public String readDocumentSignatureOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException, DocumentNotFoundException {
+    public String readDocumentSignatureOfClaim(int claimUuid, int documentUuid) throws ClaimNotFoundException,
+            DocumentNotFoundException {
         return retrieveClaim(claimUuid).retrieveDocument(documentUuid).getDigitalSignature();
     }
 
-    public void updateDocumentOfClaim(int claimUuid, int documentUuid, String description, String digitalSignature, String userId) throws ClaimNotFoundException, DocumentNotFoundException, NotSameUserException {
+    public void updateDocumentOfClaim(int claimUuid, int documentUuid, String description, String digitalSignature,
+                                      String userId) throws ClaimNotFoundException, DocumentNotFoundException, NotSameUserException {
         retrieveClaim(claimUuid).updateDocument(documentUuid, description, digitalSignature, userId);
     }
 
-    public void deleteDocumentOfClaim(int claimUuid, int documentUuid, String userId) throws ClaimNotFoundException, DocumentNotFoundException, NotSameUserException {
+    public void deleteDocumentOfClaim(int claimUuid, int documentUuid, String userId) throws ClaimNotFoundException,
+            DocumentNotFoundException, NotSameUserException {
         retrieveClaim(claimUuid).deleteDocument(documentUuid, userId);
     }
 
