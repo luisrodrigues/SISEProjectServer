@@ -78,8 +78,10 @@ public class Claim {
             throws DocumentNotFoundException, NotSameUserException {
         Document document = this.retrieveDocument(documentUuid);
         if (document.getUserId().equals(userId)) {
-            document.setContent(newContent);
-            document.setDigitalSignature(digitalSignature);
+            synchronized(document) {
+                document.setContent(newContent);
+                document.setDigitalSignature(digitalSignature);
+            }
         } else {
             throw new NotSameUserException("You are not the author of this document!");
         }
